@@ -4,20 +4,20 @@ In this exercise, we will build and experiment with BGP anyscast routes that ste
 
 ### Why does it matter?
 
-As Cilium is becoming the CNI of choice for Kubernetes, we hope to create a golden template for users to configure the Cilium BGP control plane for the purpose of Kubernetes service load balancing. It also caters for the configuration of an FRR router as a typical upstream BGP neigbour to interact with Cilium on two or more Kubernetes clusters. 
+As Cilium is becoming the CNI of choice for Kubernetes, we hope to create a golden template for users to configure the Cilium BGP control plane in a standard way for Kubernetes service load balancing. It also caters for the configuration of an FRR router as a typical upstream BGP neigbour to interact with Cilium on two or more Kubernetes clusters. 
 
 All in all, what we are going to do here is ready to extend to more sophisticated use cases of applying global server load balancing (GSLB) at scale to numerous Kubernetes services or ingress gateways that spring up on cloud or on premises nowadays.
 
 ### Lab inventory
 
-The [baseline lab](../containerlab_frr_mk02.png) is extended to include a second minikube K8s cluster, mkcluster02 and a third FRR leaf switch, frrleaf3, which connects the new cluster to the FRR fabrics.
+The lab consists of the following docker or Kubernetes resources that form the underlying topology. All of them are deployed by hand on an Ubuntu VM host.
 
 <table>
 	<thead>
 		<tr>
-			<th scope="col">ContainerLab Node</th>
+			<th scope="col">Topology Node</th>
 			<th scope="col">Network Configuration</th>
-			<th scope="col">Creator</th>
+			<th scope="col">Creation</th>
 		</tr>
 	</thead>
 	<tbody>
