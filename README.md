@@ -25,7 +25,7 @@ Our lab provides an emulation enviroment for the docker resources below to const
 		<tr>
 			<td aligh="left">Client workstation</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">IP: 192.168.20.2/24</td>
+			<td aligh="left">192.168.20.2/24</td>
 			<td aligh="left">docker run</td>
 		</tr>
         <tr>
@@ -37,9 +37,9 @@ Our lab provides an emulation enviroment for the docker resources below to const
 		<tr>
 			<td aligh="left">FRR tor switch</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">IP: 192.168.20.101/24 <br>
-                IP: 10.20.0.101/16 <br>
-				IP: 172.20.0.101/16 <br>
+			<td aligh="left">192.168.20.101/24 <br>
+                10.20.0.101/16 <br>
+				172.20.0.101/16 <br>
 				BGP ASN: 65001
 			</td>
 			<td aligh="left">docker run</td>
@@ -47,7 +47,7 @@ Our lab provides an emulation enviroment for the docker resources below to const
         <tr>
 			<td aligh="left">Kind01 K8s cluster node 1</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">IP: 10.20.0.2/16</td>
+			<td aligh="left">10.20.0.2/16</td>
 			<td aligh="left">kind create cluster</td>
 		</tr>
 		<tr>
@@ -65,13 +65,13 @@ Our lab provides an emulation enviroment for the docker resources below to const
 		 <tr>
 			<td aligh="left">Kind02 K8s cluster node 1</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">IP: 172.20.0.2/16</td>
+			<td aligh="left">172.20.0.2/16</td>
 			<td aligh="left">kind create cluster</td>
 		</tr>
 		<tr>
 			<td aligh="left">Kind02 K8s cluster node 2</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">IP: 172.20.0.3/16</td>
+			<td aligh="left">172.20.0.3/16</td>
 			<td aligh="left">kind create cluster</td>
 		</tr>
 		 <tr>
