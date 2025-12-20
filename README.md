@@ -10,12 +10,13 @@ All in all, what we are going to do here is ready to extend to more sophisticate
 
 ### Lab inventory
 
-The lab consists of the following docker or Kubernetes resources that form the underlying topology. All of them are deployed by hand on an Ubuntu VM host.
+Our lab provide an emulation enviroment for the docker resources below to constitute the underlying topology. All of them are deployed by hand on an Ubuntu VM host.
 
 <table>
 	<thead>
 		<tr>
 			<th scope="col">Topology Node</th>
+			<th scope="col">Docker Type</th>
 			<th scope="col">Network Configuration</th>
 			<th scope="col">Creation</th>
 		</tr>
@@ -23,16 +24,18 @@ The lab consists of the following docker or Kubernetes resources that form the u
 	<tbody>
 		<tr>
 			<td aligh="left">Client workstation</td>
-			<td aligh="left">Host IP: 192.168.100.11/24</td>
-			<td aligh="left">Created by ContainerLab</td>
+			<td aligh="left">Container</td>
+			<td aligh="left">Host IP: 192.168.20.2/24</td>
+			<td aligh="left">docker run</td>
 		</tr>
     <tr>
-			<td aligh="left">Client02 workstation</td>
-			<td aligh="left">Host IP: 192.168.200.22/24</td>
-			<td aligh="left">Created by ContainerLab</td>
+			<td aligh="left">Client Docker subnet</td>
+			<td aligh="left">Network</td>
+			<td aligh="left">192.168.20.0/24</td>
+			<td aligh="left">docker network create</td>
 		</tr>
 		<tr>
-			<td aligh="left">FRR Leaf 1</td>
+			<td aligh="left">FRR ToR switch</td>
 			<td aligh="left">Network Prefix: 192.168.100.0/24 <br>
         Network Prefix: 192.168.200.0/24 <br>
 				Network Prefix: 10.0.1.0/24 <br>
