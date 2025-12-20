@@ -53,7 +53,7 @@ Our lab provides an emulation enviroment for the docker resources below to const
 		<tr>
 			<td aligh="left">Kind01 K8s cluster node 2</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">IP: 10.20.0.3/16</td>
+			<td aligh="left">10.20.0.3/16</td>
 			<td aligh="left">kind create cluster</td>
 		</tr>
 		 <tr>
