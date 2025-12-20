@@ -10,7 +10,7 @@ All in all, what we are going to do here is ready to extend to more sophisticate
 
 ### Lab inventory
 
-Our lab provide an emulation enviroment for the docker resources below to constitute the underlying topology. All of them are deployed by hand on an Ubuntu VM host.
+Our lab provides an emulation enviroment for the docker resources below to constitute the underlying topology. All of them are deployed by hand on an Ubuntu VM host.
 
 <table>
 	<thead>
@@ -25,72 +25,60 @@ Our lab provide an emulation enviroment for the docker resources below to consti
 		<tr>
 			<td aligh="left">Client workstation</td>
 			<td aligh="left">Container</td>
-			<td aligh="left">Host IP: 192.168.20.2/24</td>
+			<td aligh="left">IP: 192.168.20.2/24</td>
 			<td aligh="left">docker run</td>
 		</tr>
-    <tr>
-			<td aligh="left">Client Docker subnet</td>
+        <tr>
+			<td aligh="left">Client docker subnet</td>
 			<td aligh="left">Network</td>
 			<td aligh="left">192.168.20.0/24</td>
 			<td aligh="left">docker network create</td>
 		</tr>
 		<tr>
-			<td aligh="left">FRR ToR switch</td>
-			<td aligh="left">Network Prefix: 192.168.100.0/24 <br>
-        Network Prefix: 192.168.200.0/24 <br>
-				Network Prefix: 10.0.1.0/24 <br>
+			<td aligh="left">FRR tor switch</td>
+			<td aligh="left">Container</td>
+			<td aligh="left">IP: 192.168.20.101/24 <br>
+                IP: 10.20.0.101/16 <br>
+				IP: 172.20.0.101/16 <br>
 				BGP ASN: 65001
 			</td>
-			<td aligh="left">Created by ContainerLab</td>
+			<td aligh="left">docker run</td>
+		</tr>
+        <tr>
+			<td aligh="left">Kind01 K8s cluster node 1</td>
+			<td aligh="left">Container</td>
+			<td aligh="left">IP: 10.20.0.2/16</td>
+			<td aligh="left">kind create cluster</td>
 		</tr>
 		<tr>
-			<td aligh="left">FRR Spine</td>
-			<td aligh="left">Network Prefix: 10.0.1.0/24 <br>
-				Network Prefix: 10.0.2.0/24 <br>
-        Network Prefix: 10.0.3.0/24 <br>
-				BGP ASN: 64999
-			</td>
-			<td aligh="left">Created by ContainerLab</td>
+			<td aligh="left">Kind01 K8s cluster node 2</td>
+			<td aligh="left">Container</td>
+			<td aligh="left">IP: 10.20.0.3/16</td>
+			<td aligh="left">kind create cluster</td>
+		</tr>
+		 <tr>
+			<td aligh="left">Kind01 docker subnet</td>
+			<td aligh="left">Network</td>
+			<td aligh="left">10.20.0.0/16</td>
+			<td aligh="left">docker network create</td>
+		</tr>
+		 <tr>
+			<td aligh="left">Kind02 K8s cluster node 1</td>
+			<td aligh="left">Container</td>
+			<td aligh="left">IP: 172.20.0.2/16</td>
+			<td aligh="left">kind create cluster</td>
 		</tr>
 		<tr>
-		    <td aligh="left">FRR Leaf 2</td>
-			<td aligh="left">Network Prefix: 10.0.2.0/24 <br>
-				Network Prefix: 192.168.49.0/24 <br>
-				BGP ASN: 65002
-			</td>
-			<td aligh="left">Created by ContainerLab</td>
+			<td aligh="left">Kind02 K8s cluster node 2</td>
+			<td aligh="left">Container</td>
+			<td aligh="left">IP: 172.20.0.3/16</td>
+			<td aligh="left">kind create cluster</td>
 		</tr>
-    <tr>
-		    <td aligh="left">FRR Leaf 3</td>
-			<td aligh="left">Network Prefix: 10.0.3.0/24 <br>
-				Network Prefix: 192.168.99.0/24 <br>
-				BGP ASN: 65003
-			</td>
-			<td aligh="left">Created by ContainerLab</td>
+		 <tr>
+			<td aligh="left">Kind02 docker subnet</td>
+			<td aligh="left">Network</td>
+			<td aligh="left">172.20.0.0/16</td>
+			<td aligh="left">kind create cluster</td>
 		</tr>
-		<tr>
-		    <td aligh="left">Minikube docker bridge</td>
-			<td aligh="left">Network Prefix (transparent): Network Prefix: 192.168.49.0/24
-			</td>
-			<td aligh="left">Created in advance by Minikube</td>
-		</tr>
-    <tr>
-		    <td aligh="left">Minikube docker bridge</td>
-			<td aligh="left">Network Prefix (transparent): Network Prefix: 192.168.99.0/24
-			</td>
-			<td aligh="left">Created in advance by Minikube</td>
-		</tr>
-		<tr>
-		    <td aligh="left">Minikube K8s cluster01 single node</td>
-			<td aligh="left">Host IP: 192.168.49.2/24
-			</td>
-			<td aligh="left">Created in advance by Minikube</td>
-		</tr>
-		<tr>
-		    <td aligh="left">Minikube K8s cluster02 single node</td>
-			<td aligh="left">Host IP: 192.168.99.2/24
-			</td>
-			<td aligh="left">Created in advance by Minikube</td>
-		</tr>
-	</tbody>
+  </tbody>
 </table>
