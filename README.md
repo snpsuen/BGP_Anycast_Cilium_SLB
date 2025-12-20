@@ -83,4 +83,4 @@ Our lab provides an emulation enviroment for the docker resources below to const
   </tbody>
 </table>
 
-### 1. Install Kind and create Kind Kubernetes cluster
+### 1. Install Kind and create Kind Kubernetes clusters
