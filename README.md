@@ -83,4 +83,23 @@ Our lab provides an emulation enviroment for the docker resources below to const
   </tbody>
 </table>
 
-### 1. Deploy  Kind Kubernetes clusters
+### 1. Deploy Kind Kubernetes clusters
+
+The lab is assumed to take place in a Ubuntu 22.04 VM host on VirtualBox in our example. First install the Kind binaries on the host.
+```
+sudo sysctl -w fs.inotify.max_user_watches=524288
+  sudo sysctl -w fs.inotify.max_user_instances=512
+
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+  [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+  chmod u+x ./kind
+  cp -p ./kind /usr/local/bin
+```
+
+Create a user-defined docker subnet named kind01 with a cidr of 10.20.0.0/16. Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to instruct kind to a create a Kubernetes cluster named kind01 onon 
+
+
+
+
