@@ -1,0 +1,11 @@
+apiVersion: "cilium.io/v2"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: kind-lbippool
+spec:
+  blocks:
+  - start: "172.30.0.10"
+    stop: "172.30.0.20"
+  serviceSelector:
+    matchLabels:
+      lbmode: bgp
