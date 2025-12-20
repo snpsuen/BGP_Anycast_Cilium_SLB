@@ -98,8 +98,8 @@ chmod u+x ./kind
 cp -p ./kind /usr/local/bin
 ```
 
-Create a user-defined docker subnet named kind01 with a cidr of 10.20.0.0/16. <br>
-Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to instruct kind to a create the first Kubernetes cluster called kind01 on the the docker subnet kind01.
+Create a docker subnet named kind01 with a cidr of 10.20.0.0/16. <br>
+Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to kind01 to instruct kind to create the first Kubernetes cluster called kind01 on the the user defined subnet 10.20.0.0/16
 ```
 docker network create --subnet=10.20.0.0/16 kind01
 export KIND_EXPERIMENTAL_DOCKER_NETWORK=kind01
@@ -112,6 +112,20 @@ nodes:
  - role: worker
 EOF
 ```
+
+```
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl config current-context
+kind-kind01
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get nodes -o wide
+NAME                   STATUS   ROLES           AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION       CONTAINER-RUNTIME
+kind01-control-plane   Ready    control-plane   8m17s   v1.34.0   10.20.0.3     <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
+kind01-worker          Ready    <none>          7m51s   v1.34.0   10.20.0.2     <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+```
+
+
+
+
 
 
 
