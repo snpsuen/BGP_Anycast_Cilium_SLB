@@ -99,7 +99,7 @@ cp -p ./kind /usr/local/bin
 ```
 
 Create a user-defined docker subnet named kind01 with a cidr of 10.20.0.0/16. <br>
-Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to instruct kind to a create a Kubernetes cluster named kind01 on the the docker subnet kind01.
+Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to instruct kind to a create the first Kubernetes cluster called kind01 on the the docker subnet kind01.
 ```
 docker network create --subnet=10.20.0.0/16 kind01
 export KIND_EXPERIMENTAL_DOCKER_NETWORK=kind01
