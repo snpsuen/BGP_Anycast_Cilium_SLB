@@ -85,20 +85,33 @@ Our lab provides an emulation enviroment for the docker resources below to const
 
 ### 1. Deploy Kind Kubernetes clusters
 
-The lab is assumed to take place in a Ubuntu 22.04 VM host on VirtualBox in our example. First install the Kind binaries on the host.
+The lab is assumed to take place in a Ubuntu 22.04 VM host on VirtualBox in our example. <br>
+Install the Kind binaries on the host.
 ```
 sudo sysctl -w fs.inotify.max_user_watches=524288
-  sudo sysctl -w fs.inotify.max_user_instances=512
+sudo sysctl -w fs.inotify.max_user_instances=512
 
-  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-  sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
-
-  [ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
-  chmod u+x ./kind
-  cp -p ./kind /usr/local/bin
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+[ $(uname -m) = x86_64 ] && curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.30.0/kind-linux-amd64
+chmod u+x ./kind
+cp -p ./kind /usr/local/bin
 ```
 
-Create a user-defined docker subnet named kind01 with a cidr of 10.20.0.0/16. Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to instruct kind to a create a Kubernetes cluster named kind01 onon 
+Create a user-defined docker subnet named kind01 with a cidr of 10.20.0.0/16. <br>
+Set the environment variable KIND_EXPERIMENTAL_DOCKER_NETWORK to instruct kind to a create a Kubernetes cluster named kind01 on the the docker subnet kind01.
+```
+docker network create --subnet=10.20.0.0/16 kind01
+export KIND_EXPERIMENTAL_DOCKER_NETWORK=kind01
+kind create cluster --config=- <<EOF
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: $kind
+nodes:
+ - role: control-plane
+ - role: worker
+EOF
+```
 
 
 
