@@ -1,0 +1,17 @@
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: kind-bgp-advertisements
+  labels:
+    advertise: bgp
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - ClusterIP
+          - ExternalIP
+          - LoadBalancerIP
+      selector:
+        matchLabels:
+          lbmode: bgp
