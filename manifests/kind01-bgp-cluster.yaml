@@ -1,1 +1,15 @@
-
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: kind01-bgp-cluster
+spec:
+  bgpInstances:
+  - name: instance-65101
+    localASN: 65101
+    localPort: 179
+    peers:
+    - name: peer-65001-kind01
+      peerASN: 65001
+      peerAddress: 10.20.0.101
+      peerConfigRef:
+        name: kind-bgp-peer
