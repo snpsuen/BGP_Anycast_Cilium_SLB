@@ -153,7 +153,7 @@ docker exec kind01-control-plane rm -rf /etc/cni/net.d/*
 docker exec kind01-worker rm -rf /etc/cni/net.d/*
 ```
 
-Install Cilium in both K8s clusters with the desirable settings. In particular, the flag bgpControlPlane.enabled=true indicates the Cilium BGP control plane will be enabled upon installation.
+Install Cilium in both K8s clusters with the desirable settings. In particular, the flag bgpControlPlane.enabled=true means the Cilium BGP control plane will be enabled upon installation.
 ```
 CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
 CLI_ARCH=amd64
@@ -258,3 +258,10 @@ maximum-paths 10
 The first line means that the switch will treat two or more BGP routes whose AS paths are of the same length as equal-cost routes. In our example, the AS path of the BGP route to the anycast VIP on the kind01 cluster is "65101 i", while the BGP route to the anycast VIP on kind02 takes the AS path "65102 i". The routes are considered equal in cost as both are two ASNs long.
 
 The second line indicates that the switch will install a maximum of 10 equal-cost routes as ECMP routes.
+
+Another point of note is that following net.ipv4 parameter will be set when frrtor comes up.
+```
+sysctl -w net.ipv4.fib_multipath_hash_policy=1
+```
+
+It means the switch will hash the 5-tuple L4 headers of an connection flow to determine which ECMP route to take. Accordingly, connection flows that are different in the fields of source port, source IP, destimation port and destination IP tend to be assigned different ECMP routes.
