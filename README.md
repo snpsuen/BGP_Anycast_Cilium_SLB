@@ -248,13 +248,13 @@ The FRR switch is configured by virtue of these files mounted on /etc/frr within
 * [configure/frrdaemons](configure/frrdaemons)
 * [configure/vtysh.conf](configure/vtysh.conf)
 
-In particular, it is important to set the following bgp features as per [frrtor.conf](configure/frrtor.conf), which are intrumental in adopting ECMP routes.
+In particular, it is important to set the following bgp features as per [frrtor.conf](configure/frrtor.conf), which are pivotal to the adoption of ECMP routes.
 ```
 bgp bestpath as-path multipath-relax
 ...
 maximum-paths 10
 ```
 
-The first line means that the switch will treat two or more BGP routes whose AS paths are of the same length as equal-cost routes. In our example, the AS path of the BGP route to the anycast VIP on mkcluster01 is "65002 65101", while the BGP route to the anycast VIP on mkcluster02 takes the AS path "65003 65102". The routes are considered equal in cost as both are two ASNs long.
+The first line means that the switch will treat two or more BGP routes whose AS paths are of the same length as equal-cost routes. In our example, the AS path of the BGP route to the anycast VIP on the kind01 cluster is "65101 i", while the BGP route to the anycast VIP on kind02 takes the AS path "65102 i". The routes are considered equal in cost as both are two ASNs long.
 
 The second line indicates that the switch will install a maximum of 10 equal-cost routes as ECMP routes.
