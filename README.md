@@ -1,6 +1,6 @@
 ![BGP_anycast_cilium](bgp_anycast_cilium.png)
 
-In this exercise, we will build and experiment with BGP anyscast routes that steer client requests to a service VIP advertised by the Cilium CNI provider from two Kubernetes clusters. The work will be carried out in a nifty but realistic emulation lab where all the assets including the FRR switch container and Kind K8s clusters are deployed by hand.
+In this exercise, we will build and experiment with BGP anyscast routes that steer client requests to a service VIP advertised by the Cilium CNI provider from two Kubernetes clusters. The work will be carried out in a nifty but realistic emulation lab where all the assets including the FRR switch container and kind K8s clusters are deployed by hand.
 
 ### Why does it matter?
 
@@ -113,7 +113,7 @@ nodes:
 EOF
 ```
 
-Perform post-deployment routines on the Kind cluster nodes by adding return routes for the client network and installing auxilliary utilities.
+Perform post-deployment routines on the kind cluster nodes by adding the return routes for the client network and installing auxilliary utilities.
 ```
 docker exec kind01-control-plane ip route add 192.168.20.0/24 via 10.20.0.101 dev eth0
 docker exec kind01-worker ip route add 192.168.20.0/24 via 10.20.0.101 dev eth0
@@ -122,6 +122,7 @@ docker exec kind01-control-plane bash -c "apt-get update && apt-get install iput
 docker exec kind01-worker bash -c "apt-get update && apt-get install iputils-ping"
 ```
 
+After installation, the kubectl context points to the newly created Kubernetes cluster, kind01.
 ```
 keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl config current-context
 kind-kind01
@@ -132,25 +133,7 @@ kind01-worker          Ready    <none>          7m51s   v1.34.0   10.20.0.2     
 keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
 ```
 
-Similarly use kind to create the second Kubernetes cluster called kind02 on the the user defined subnet 172.20.0.0/16
-```
-docker network create --subnet=172.20.0.0/16 kind02
-export KIND_EXPERIMENTAL_DOCKER_NETWORK=kind01
-kind create cluster --config=- <<EOF
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-name: kind02
-nodes:
- - role: control-plane
- - role: worker
-EOF
-
-docker exec kind02-control-plane ip route add 192.168.20.0/24 via 172.20.0.101 dev eth0
-docker exec kind02-worker ip route add 192.168.20.0/24 via 172.20.0.101 dev eth0
-docker exec kind02-control-plane bash -c "apt-get update && apt-get install iputils-ping"
-docker exec kind02-worker bash -c "apt-get update && apt-get install iputils-ping"
-```
-
+Similarly use kind to create the second Kubernetes cluster called kind02 on the the user defined subnet 172.20.0.0/16.
 ```
 keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl config current-context
 kind-kind02
@@ -162,7 +145,7 @@ kind02-worker          Ready    <none>          2m12s   v1.34.0   172.20.0.3    
 
 ### Install Cilum in Kubernetes
 
-Before installation, it is necessary to remove the default CNI that comes with Kind together with the kube-proxy and kindnet daemon sets.
+Before installation, it is necessary to remove the default CNI that comes with kind together with the kube-proxy and kindnet daemon sets.
 ```
 kubectl delete daemonset -n kube-system kube-proxy
 kubectl delete daemonset -n kube-system kindnet
@@ -170,13 +153,65 @@ docker exec kind01-control-plane rm -rf /etc/cni/net.d/*
 docker exec kind01-worker rm -rf /etc/cni/net.d/*
 ```
 
+Install Cilium in the K8s cluster with the desirable settings. In particular, the flag bgpControlPlane.enabled=true indicates the Cilium BGP control plane will be enabled upon installation.
+```
+CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
+CLI_ARCH=amd64
+if [ "$(uname -m)" = "aarch64" ]; then CLI_ARCH=arm64; fi
+curl -L --fail --remote-name-all https://github.com/cilium/cilium-cli/releases/download/${CILIUM_CLI_VERSION}/cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
+sha256sum --check cilium-linux-${CLI_ARCH}.tar.gz.sha256sum
+sudo tar xzvfC cilium-linux-${CLI_ARCH}.tar.gz /usr/local/bin
+rm cilium-linux-${CLI_ARCH}.tar.gz{,.sha256sum}
 
+cilium install \
+  --set kubeProxyReplacement="true" \
+  --set routingMode="native" \
+  --set ipv4NativeRoutingCIDR="10.244.0.0/16" \
+  --set bgpControlPlane.enabled=true \
+  --set l2NeighDiscovery.enabled=true \
+  --set l2announcements.enabled=true \
+  --set l2podAnnouncements.enabled=true \
+  --set externalIPs.enabled=true \
+  --set autoDirectNodeRoutes=true \
+  --set operator.replicas=2
+```
 
+Check the installation completed OK and Cilium has taken over the Kubernetes cluster.
+```
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ cilium status
+    /¯¯\
+ /¯¯\__/¯¯\    Cilium:             OK
+ \__/¯¯\__/    Operator:           OK
+ /¯¯\__/¯¯\    Envoy DaemonSet:    OK
+ \__/¯¯\__/    Hubble Relay:       disabled
+    \__/       ClusterMesh:        disabled
 
-
-
-
-
-
-
-
+DaemonSet              cilium                   Desired: 2, Ready: 2/2, Available: 2/2
+DaemonSet              cilium-envoy             Desired: 2, Ready: 2/2, Available: 2/2
+Deployment             cilium-operator          Desired: 2, Ready: 2/2, Available: 2/2
+Containers:            cilium                   Running: 2
+                       cilium-envoy             Running: 2
+                       cilium-operator          Running: 2
+                       clustermesh-apiserver
+                       hubble-relay
+Cluster Pods:          2/3 managed by Cilium
+Helm chart version:    1.18.3
+Image versions         cilium             quay.io/cilium/cilium:v1.18.3@sha256:5649db451c88d928ea585514746d50d91e6210801b300c897283ea319d68de15: 2
+                       cilium-envoy       quay.io/cilium/cilium-envoy:v1.34.10-1761014632-c360e8557eb41011dfb5210f8fb53fed6c0b3222@sha256:ca76eb4e9812d114c7f43215a742c00b8bf41200992af0d21b5561d46156fd15: 2
+                       cilium-operator    quay.io/cilium/operator-generic:v1.18.3@sha256:b5a0138e1a38e4437c5215257ff4e35373619501f4877dbaf92c89ecfad81797: 2
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl -n kube-system get pods
+NAME                                           READY   STATUS    RESTARTS   AGE
+cilium-42gvd                                   1/1     Running   0          27m
+cilium-792kd                                   1/1     Running   0          27m
+cilium-envoy-dqppr                             1/1     Running   0          27m
+cilium-envoy-hwbwr                             1/1     Running   0          27m
+cilium-operator-686595b9d4-hnmpw               1/1     Running   0          27m
+cilium-operator-686595b9d4-mt7sm               1/1     Running   0          27m
+coredns-66bc5c9577-vwkmq                       1/1     Running   0          26m
+coredns-66bc5c9577-zfjh6                       1/1     Running   0          26m
+etcd-kind01-control-plane                      1/1     Running   0          28m
+kube-apiserver-kind01-control-plane            1/1     Running   0          28m
+kube-controller-manager-kind01-control-plane   1/1     Running   0          28m
+kube-scheduler-kind01-control-plane            1/1     Running   0          28m
+```
