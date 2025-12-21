@@ -153,7 +153,7 @@ docker exec kind01-control-plane rm -rf /etc/cni/net.d/*
 docker exec kind01-worker rm -rf /etc/cni/net.d/*
 ```
 
-Install Cilium in the K8s cluster with the desirable settings. In particular, the flag bgpControlPlane.enabled=true indicates the Cilium BGP control plane will be enabled upon installation.
+Install Cilium in both K8s clusters with the desirable settings. In particular, the flag bgpControlPlane.enabled=true indicates the Cilium BGP control plane will be enabled upon installation.
 ```
 CILIUM_CLI_VERSION=$(curl -s https://raw.githubusercontent.com/cilium/cilium-cli/main/stable.txt)
 CLI_ARCH=amd64
@@ -176,7 +176,7 @@ cilium install \
   --set operator.replicas=2
 ```
 
-Check the installation completed OK and Cilium has taken over the Kubernetes cluster.
+Check the installation completed OK and Cilium has taken over each cluster.
 ```
 keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ cilium status
     /¯¯\
@@ -215,3 +215,4 @@ kube-apiserver-kind01-control-plane            1/1     Running   0          28m
 kube-controller-manager-kind01-control-plane   1/1     Running   0          28m
 kube-scheduler-kind01-control-plane            1/1     Running   0          28m
 ```
+
