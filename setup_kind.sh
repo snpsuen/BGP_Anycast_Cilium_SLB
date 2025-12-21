@@ -52,7 +52,8 @@ kubectl get nodes -o wide
 kubectl taint nodes ${kind}-control-plane node-role.kubernetes.io/control-plane:NoSchedule-
 kubectl describe node ${kind}-worker | grep Taints
 
-kubectl delete daemonset -n kube-system kube-proxy
+kubectl -n kube-system delete daemonset kube-proxy
+kubectl -n kube-system delete daemonset kindnet
 docker exec ${kind}-control-plane rm -rf /etc/cni/net.d/*
 docker exec ${kind}-worker rm -rf /etc/cni/net.d/*
 
