@@ -194,7 +194,7 @@ Containers:            cilium                   Running: 2
                        cilium-operator          Running: 2
                        clustermesh-apiserver
                        hubble-relay
-Cluster Pods:          2/3 managed by Cilium
+Cluster Pods:          4/5 managed by Cilium
 Helm chart version:    1.18.3
 Image versions         cilium             quay.io/cilium/cilium:v1.18.3@sha256:5649db451c88d928ea585514746d50d91e6210801b300c897283ea319d68de15: 2
                        cilium-envoy       quay.io/cilium/cilium-envoy:v1.34.10-1761014632-c360e8557eb41011dfb5210f8fb53fed6c0b3222@sha256:ca76eb4e9812d114c7f43215a742c00b8bf41200992af0d21b5561d46156fd15: 2
