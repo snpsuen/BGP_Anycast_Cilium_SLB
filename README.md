@@ -268,9 +268,9 @@ It means the switch will hash the L4 headers of an connection flow in the form o
 
 ### 4. Set up Cilium service load balancing
 
-Define an load balancing IP address management pool (LB IPAM) from which to assign IP addresses to Kubernetes services of the LoadBalancer type. In this example, the pool ranges from "172.30.0.10" to "172.30.0.20".
+Define an load balancing IP address management pool (LB IPAM) from which to assign IP addresses to Kubernetes services of the LoadBalancer type. In our example, the pool ranges from "172.30.0.10" to "172.30.0.20".
 
-Apply the [kind-lbippool.yaml](manifests/kind-lbippool.yaml) in each kind cluster.
+Apply the given manifest [kind-lbippool.yaml](manifests/kind-lbippool.yaml) in each kind cluster.
 ```
 kubectl apply -f kind-lbippool.yaml
 ```
