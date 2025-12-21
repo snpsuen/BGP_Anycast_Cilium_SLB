@@ -83,7 +83,7 @@ Our lab provides an emulation enviroment for the docker resources below to const
   </tbody>
 </table>
 
-### 1. Deploy the Kind Kubernetes clusters
+### 1. Deploy the kind Kubernetes clusters
 
 The lab is assumed to take place in a Ubuntu 22.04 VM host on VirtualBox in our example. <br>
 Install the Kind binaries on the host.
@@ -248,7 +248,7 @@ The FRR switch is configured by virtue of these files mounted on /etc/frr within
 * [configure/frrdaemons](configure/frrdaemons)
 * [configure/vtysh.conf](configure/vtysh.conf)
 
-In particular, it is important to set the following bgp features as per [frrtor.conf](configure/frrtor.conf), which are pivotal to the adoption of ECMP routes.
+In particular, it is important to turn on the following bgp features as per [frrtor.conf](configure/frrtor.conf), which are pivotal to the adoption of ECMP routes.
 ```
 bgp bestpath as-path multipath-relax
 ...
@@ -259,9 +259,21 @@ The first line means that the switch will treat two or more BGP routes whose AS 
 
 The second line indicates that the switch will install a maximum of 10 equal-cost routes as ECMP routes.
 
-Another point of note is that following net.ipv4 parameter will be set when frrtor comes up.
+Another point of note is to set following net.ipv4 parameter when frrtor comes up.
 ```
 sysctl -w net.ipv4.fib_multipath_hash_policy=1
 ```
 
 It means the switch will hash the L4 headers of an connection flow in the form of a 5-tuple to determine which ECMP route to take. Accordingly, connection flows that are different in the fields of source port, source IP, destimation port and destination IP tend to be assigned different ECMP routes.
+
+### 4. Set up Cilium service load balancing
+
+Define an load balancing IP address management pool from which to assign IP addresses to Kubernetes services of the LoadBalancer type. In this example, the pool ranges from "172.30.0.10" to "172.30.0.20".
+
+Apply the following manifest in each kind cluster.
+```
+kubectl apply -f [kind-lbippool.yam](manifests/kind-lbippool.yaml
+```
+
+
+The manifest is applied in each kind cluster. 
