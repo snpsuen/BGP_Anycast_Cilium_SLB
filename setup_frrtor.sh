@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 docker network create --subnet=192.168.20.0/24 client
