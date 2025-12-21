@@ -143,7 +143,7 @@ kind02-control-plane   Ready    control-plane   2m32s   v1.34.0   172.20.0.2    
 kind02-worker          Ready    <none>          2m12s   v1.34.0   172.20.0.3    <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
 ```
 
-### Install Cilum in Kubernetes
+### 2. Install Cilum in Kubernetes
 
 Before installation, it is necessary to remove the default CNI that comes with kind together with the kube-proxy and kindnet daemon sets.
 ```
@@ -215,4 +215,11 @@ kube-apiserver-kind01-control-plane            1/1     Running   0          28m
 kube-controller-manager-kind01-control-plane   1/1     Running   0          28m
 kube-scheduler-kind01-control-plane            1/1     Running   0          28m
 ```
+
+### 3. Deploy FRR switch
+
+Deploy an FRR switch container as a so-called top of the rack router to forward traffic between the two kind clusters and client. In this example, the switch is connected to the following IP subnets.
+* client: 192.168.20.0/24
+* kind01: 10.20.0.0/16
+* kind02: 172.20.0.0/16
 
