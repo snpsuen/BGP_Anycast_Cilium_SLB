@@ -264,4 +264,4 @@ Another point of note is that following net.ipv4 parameter will be set when frrt
 sysctl -w net.ipv4.fib_multipath_hash_policy=1
 ```
 
-It means the switch will hash the 5-tuple L4 headers of an connection flow to determine which ECMP route to take. Accordingly, connection flows that are different in the fields of source port, source IP, destimation port and destination IP tend to be assigned different ECMP routes.
+It means the switch will hash the L4 headers of an connection flow in the form of a 5-tuple to determine which ECMP route to take. Accordingly, connection flows that are different in the fields of source port, source IP, destimation port and destination IP tend to be assigned different ECMP routes.
