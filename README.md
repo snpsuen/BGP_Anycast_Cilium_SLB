@@ -266,7 +266,7 @@ sysctl -w net.ipv4.fib_multipath_hash_policy=1
 
 It means the switch will hash the L4 headers of an connection flow in the form of a 5-tuple to determine which ECMP route to take. Accordingly, connection flows that are different in the fields of source port, source IP, destimation port and destination IP tend to be assigned different ECMP routes.
 
-### 4. Set up Cilium service load balancing
+### 4. Get ready for Cilium service load balancing
 
 Define a load balancing IP address management pool (LB IPAM) from which to assign IP addresses to Kubernetes services of the LoadBalancer type. In our example, the pool ranges from "172.30.0.10" to "172.30.0.20".
 
@@ -274,3 +274,41 @@ Apply the given manifest [kind-lbippool.yaml](manifests/kind-lbippool.yaml) in e
 ```
 kubectl apply -f kind-lbippool.yaml
 ```
+
+Configure the Cilum BGP control plane for each kind cluster to advertise the LoadBalancer IP of the selected service to the upstream BGP peer at frrtor. Note the settings are specified on a per service label basis.
+<table>
+	<thead>
+		<tr>
+			<th scope="col">Kind K8s cluster</th>
+			<th scope="col">Local ASN</th>
+			<th scope="col">Peer ASN</th>
+			<th scope="col">BGP peer</th>
+			<th scope="col">Advertisement Resource</th>
+			<th scope="col">Advertisement Address Type</th>
+			<th scope="col">Service Label</th>
+			<th scope="col">LB IPAM Pool</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td aligh="left">kind01</td>
+			<td aligh="left">65101</td>
+			<td aligh="left">65001</td
+			<td aligh="left">10.20.0.101</td>
+			<td aligh="left">Service</td>
+			<td aligh="left">LoadBalancer IP</td>
+			<td aligh="left">lbmode: bgp</td>
+			<td aligh="left">172.30.0.10-172.30.0.20</td>
+		</tr>
+		<tr>
+			<td aligh="left">kind02</td>
+			<td aligh="left">65102</td>
+			<td aligh="left">65001</td
+			<td aligh="left">172.20.0.101</td>
+			<td aligh="left">Service</td>
+			<td aligh="left">LoadBalancer IP</td>
+			<td aligh="left">lbmode: bgp</td>
+			<td aligh="left">172.30.0.10-172.30.0.20</td>
+		</tr>
+	</tbody>
+</table>
