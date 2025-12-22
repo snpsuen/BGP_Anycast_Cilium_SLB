@@ -275,8 +275,7 @@ Apply the given manifest [kind-lbippool.yaml](manifests/kind-lbippool.yaml) in e
 kubectl apply -f kind-lbippool.yaml
 ```
 
-Configure the Cilum BGP control plane for each kind cluster to advertise the LoadBalancer IP of the selected service to the upstream BGP peer at frrtor. 
-Note the settings are specified on a per service label basis.
+Configure the Cilum BGP control plane for each kind cluster to advertise the LoadBalancer IP of the selected service to the upstream BGP peer at frrtor. Note the settings are specified on a per service label basis.
 <table>
 	<thead>
 		<tr>
@@ -313,3 +312,24 @@ Note the settings are specified on a per service label basis.
 		</tr>
 	</tbody>
 </table>
+
+The configuration is done by appling the following manifests to create the relevant Cilum custom resources on each kind cluster.
+* [kind-bgp-peer.yaml](manifests/kind-bgp-peer.yaml)
+* [kind01-bgp-cluster.yaml](manifests/kind01-bgp-cluster.yaml) or [kind02-bgp-cluster.yaml](manifests/kind02-bgp-cluster.yaml)
+* [kind-bgp-advertisements.yaml](kind-bgp-advertisements.yaml)
+
+```
+kubectl apply -f kind-bgp-peer.yaml
+
+# kindcluster variable is set to "kind01" or "kind02" somehere in advance
+if [ $kindcluster == "kind01" ]
+then
+  kubectl apply -f kind01-bgp-cluster.yaml
+fi
+if [ $kindcluster == "kind02" ]
+then
+  kubectl apply -f kind02-bgp-cluster.yaml
+fi
+
+kubectl apply -f kind-bgp-advertisements.yaml
+```
