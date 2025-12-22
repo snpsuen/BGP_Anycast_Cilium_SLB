@@ -342,7 +342,7 @@ Note that the service is of the LoadBalancer type and labelled with lbmod: bgp. 
 kubectl appply -f nginxhello.yaml
 ```
 
-As expected, the nginx service is assigned an VIP 172.24.20.100, which becomes an anycast IP as it is used to expose the pods running in different kind clusters.
+As expected, the nginx service is assigned an VIP 172.30.0.10, which becomes an anycast IP as it is used to expose the pods running in different kind clusters.
 ```
 keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl config use-context kind-kind01
 Switched to context "kind-kind01".
