@@ -337,8 +337,51 @@ kubectl apply -f kind-bgp-advertisements.yaml
 ### Deploy Nginx for test
 
 Deploy a [nginx service](manifests/nginxhello.yaml) together with its endpoint pods in each kind cluster. 
+Note that the service is of the LoadBalancer type and labelled with lbmod: bgp. Accordingly, it will be assigned an IP from the LB IPAM pool and handled by the Cilum BGP control plane for the purpose of service load balancing.
 ```
 kubectl appply -f nginxhello.yaml
 ```
 
-The service is of the LoadBalancer type and carries the lbmod: bgp label. 
+As expected, the nginx service is assigned the VIP 172.24.20.100 and use it to expose the pods running on both the kind01 and kind02 clusters.
+```
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl config use-context kind-kind01
+Switched to context "kind-kind01".
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get nodes -o wide
+NAME                   STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION       CONTAINER-RUNTIME
+kind01-control-plane   Ready    control-plane   11h   v1.34.0   10.20.0.3     <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
+kind01-worker          Ready    <none>          11h   v1.34.0   10.20.0.2     <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP             NODE                   NOMINATED NODE   READINESS GATES
+nginxhello-85f8846c44-kb44r   1/1     Running   0          7h55m   10.244.1.171   kind01-worker          <none>           <none>
+nginxhello-85f8846c44-pzpzs   1/1     Running   0          7h55m   10.244.0.56    kind01-control-plane   <none>           <none>
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get svc
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1      <none>        443/TCP        11h
+nginxhello   LoadBalancer   10.96.138.62   172.30.0.10   80:31365/TCP   7h55m
+```
+
+```
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl config use-context kind-kind02
+Switched to context "kind-kind02".
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get nodes -o wide
+NAME                   STATUS   ROLES           AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE                         KERNEL-VERSION       CONTAINER-RUNTIME
+kind02-control-plane   Ready    control-plane   10h   v1.34.0   172.20.0.2    <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
+kind02-worker          Ready    <none>          10h   v1.34.0   172.20.0.3    <none>        Debian GNU/Linux 12 (bookworm)   5.15.0-156-generic   containerd://2.1.3
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get pods -o wide
+NAME                          READY   STATUS    RESTARTS   AGE     IP             NODE                   NOMINATED NODE   READINESS GATES
+nginxhello-85f8846c44-v88f8   1/1     Running   0          7h58m   10.244.0.190   kind02-control-plane   <none>           <none>
+nginxhello-85f8846c44-vtgtz   1/1     Running   0          7h58m   10.244.1.247   kind02-worker          <none>           <none>
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ kubectl get svc
+NAME         TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+kubernetes   ClusterIP      10.96.0.1      <none>        443/TCP        10h
+nginxhello   LoadBalancer   10.96.149.92   172.30.0.10   80:31764/TCP   7h58m
+```
+
+
+
+
