@@ -316,7 +316,7 @@ Configure the Cilum BGP control plane for each kind cluster to advertise the Loa
 The configuration is done by appling the following manifests to create the relevant Cilum custom resources on each kind cluster.
 * [kind-bgp-peer.yaml](manifests/kind-bgp-peer.yaml)
 * [kind01-bgp-cluster.yaml](manifests/kind01-bgp-cluster.yaml) or [kind02-bgp-cluster.yaml](manifests/kind02-bgp-cluster.yaml)
-* [kind-bgp-advertisements.yaml](kind-bgp-advertisements.yaml)
+* [kind-bgp-advertisements.yaml](manifests/kind-bgp-advertisements.yaml)
 
 ```
 kubectl apply -f kind-bgp-peer.yaml
@@ -333,3 +333,12 @@ fi
 
 kubectl apply -f kind-bgp-advertisements.yaml
 ```
+
+### Deploy Nginx for test
+
+Deploy a [nginx service](manifests/nginxhello.yaml) together with its endpoint pods in each kind cluster. 
+```
+kubectl appply -f nginxhello.yaml
+```
+
+The service is of the LoadBalancer type and carries the lbmod: bgp label. 
