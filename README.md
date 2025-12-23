@@ -373,7 +373,7 @@ nginxhello-85f8846c44-v88f8   1/1     Running   0          7h58m   10.244.0.190 
 nginxhello-85f8846c44-vtgtz   1/1     Running   0          7h58m   10.244.1.247   kind02-worker          <none>           <none>
 ```
 
-Verify that the following anycast routes to the VIP 172.24.20.100 are admitted into the BGP Loc-RIB and installed as ECMP routes on frrspine.
+Check that the following routes to the anycast VIP 172.30.0.10/32 are admitted into the BGP Loc-RIB and installed as ECMP routes on frrtor.
 <table>
 	<thead>
 		<tr>
@@ -410,6 +410,54 @@ Verify that the following anycast routes to the VIP 172.24.20.100 are admitted i
 		</tr>
 	</tbody>
 </table>
+
+```
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ docker exec frrtor vtysh -c "show ip bgp"
+BGP table version is 6, local router ID is 10.0.255.11, vrf id 0
+Default local pref 100, local AS 65001
+Status codes:  s suppressed, d damped, h history, * valid, > best, = multipath,
+               i internal, r RIB-failure, S Stale, R Removed
+Nexthop codes: @NNN nexthop's vrf id, < announce-nh-self
+Origin codes:  i - IGP, e - EGP, ? - incomplete
+RPKI validation codes: V valid, I invalid, N Not found
+
+   Network          Next Hop            Metric LocPrf Weight Path
+*> 10.20.0.0/16     0.0.0.0                  0         32768 i
+*= 10.96.138.62/32  10.20.0.3                              0 65101 i
+*>                  10.20.0.2                              0 65101 i
+*> 10.96.149.92/32  172.20.0.2                             0 65102 i
+*=                  172.20.0.3                             0 65102 i
+*> 172.20.0.0/16    0.0.0.0                  0         32768 i
+*= 172.30.0.10/32   10.20.0.3                              0 65101 i
+*=                  10.20.0.2                              0 65101 i
+*>                  172.20.0.2                             0 65102 i
+*=                  172.20.0.3                             0 65102 i
+*> 192.168.20.0/24  0.0.0.0                  0         32768 i
+
+Displayed  6 routes and 11 total paths
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ docker exec frrtor vtysh -c "show ip route"
+Codes: K - kernel route, C - connected, S - static, R - RIP,
+       O - OSPF, I - IS-IS, B - BGP, E - EIGRP, N - NHRP,
+       T - Table, v - VNC, V - VNC-Direct, A - Babel, F - PBR,
+       f - OpenFabric,
+       > - selected route, * - FIB route, q - queued, r - rejected, b - backup
+       t - trapped, o - offload failure
+
+K>* 0.0.0.0/0 [0/0] via 192.168.20.1, eth0, 01:51:10
+C>* 10.20.0.0/16 is directly connected, eth1, 01:51:10
+B>* 10.96.138.62/32 [20/0] via 10.20.0.2, eth1, weight 1, 01:29:11
+  *                        via 10.20.0.3, eth1, weight 1, 01:29:11
+B>* 10.96.149.92/32 [20/0] via 172.20.0.2, eth2, weight 1, 01:31:34
+  *                        via 172.20.0.3, eth2, weight 1, 01:31:34
+C>* 172.20.0.0/16 is directly connected, eth2, 01:51:10
+B>* 172.30.0.10/32 [20/0] via 10.20.0.2, eth1, weight 1, 01:29:11
+  *                       via 10.20.0.3, eth1, weight 1, 01:29:11
+  *                       via 172.20.0.2, eth2, weight 1, 01:29:11
+  *                       via 172.20.0.3, eth2, weight 1, 01:29:11
+C>* 192.168.20.0/24 is directly connected, eth0, 01:51:10
+```
 
 
 
