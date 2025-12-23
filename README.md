@@ -461,7 +461,7 @@ C>* 192.168.20.0/24 is directly connected, eth0, 01:51:10
 
 ### End to end test from client to service
 
-Now we are ready to test the effectiveness of the BGP anycast routes to distribute the workloads of the Nginx service in a load balancing manner. To this end, run a client container on a docker image and launch a suitable command or application from there to access the service. In our example, we choose the network tooling image network-multitool to run the client container.
+Now it's time to test the effectiveness of the BGP anycast routes to distribute workloads of the Nginx service in a load balancing manner. To this end, run a client container on a docker image and launch a suitable command or application from there to access the service. In our example, we choose the network tooling image network-multitool to run the client container.
 ```
 docker run -d --privileged --name client --network client ghcr.io/hellt/network-multitool sleep infinity
 docker exec client sh -c "ip route add 10.20.0.0/16 via 192.168.20.101 dev eth0 && ip route add 172.20.0.0/16 via 192.168.20.101 dev eth0"
@@ -501,8 +501,8 @@ As the Nginx service is addressed at the anycast IP 172.30.0.10, any HTTP reques
 	</tbody>
 </table>
 
-Invoke a simple curl command to the service VIP, namely curl -s http://172.30.0.10, in a loop and keep track of which endpoint pod responds to the HTTP request.
-It is observed from the command output that the HTTP traffic is distributed between the nginx pods (10.244.0.171, 10.244.0.56) on kind01 and those (10.244.0.190, 10.244.0.247) on kind02 in a fairly even manner.
+Invoke curl on the service VIP, namely curl -s http://172.30.0.10, in a loop and keep track of which endpoint pod responds to the HTTP request.
+It is subsequently observed from the command output that the HTTP traffic is distributed between the nginx pods (10.244.0.171, 10.244.0.56) on kind01 and those (10.244.0.190, 10.244.0.247) on kind02 in a fairly even manner.
 ```
 keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ for i in {1..20}
 do
