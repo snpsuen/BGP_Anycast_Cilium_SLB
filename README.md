@@ -334,7 +334,7 @@ fi
 kubectl apply -f kind-bgp-advertisements.yaml
 ```
 
-### Deploy Nginx for test
+### 5. Deploy Nginx for test
 
 Deploy a [nginx service](manifests/nginxhello.yaml) together with its endpoint pods in each kind cluster. 
 Note that the service is of the LoadBalancer type and labelled with lbmod: bgp. Accordingly, it will be assigned an IP from the LB IPAM pool and handled by the Cilum BGP control plane for the purpose of service load balancing.
@@ -457,6 +457,158 @@ B>* 172.30.0.10/32 [20/0] via 10.20.0.2, eth1, weight 1, 01:29:11
   *                       via 172.20.0.2, eth2, weight 1, 01:29:11
   *                       via 172.20.0.3, eth2, weight 1, 01:29:11
 C>* 192.168.20.0/24 is directly connected, eth0, 01:51:10
+```
+
+### End to end test from client to service
+
+Now we are ready to test the effectiveness of the BGP anycast routes to distribute the workloads of the Nginx service in a load balancing manner. To this end, run a client container on a docker image and launch a suitable command or application from there to access the service. In our example, we choose the network tooling image network-multitool to run the client container.
+```
+docker run -d --privileged --name client --network client ghcr.io/hellt/network-multitool sleep infinity
+docker exec client sh -c "ip route add 10.20.0.0/16 via 192.168.20.101 dev eth0 && ip route add 172.20.0.0/16 via 192.168.20.101 dev eth0"
+docker exec client ip route add 172.30.0.0/16 via 192.168.20.101 dev eth0
+```
+
+As the Nginx service is addressed at the anycast IP 172.30.0.10, any HTTP request destined to it is expected to land at one of the pods hosted in kind01 or kind02.
+<table>
+	<thead>
+		<tr>
+			<th scope="col">Kind cluster</th>
+			<th scope="col">Pod</th>
+			<th scope="col">Local IP</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td aligh="left">kind01</td>
+			<td aligh="left">nginxhello-85f8846c44-kb44r</td>
+			<td aligh="left">10.244.1.171</td>
+		</tr>
+		<tr>
+			<td aligh="left">kind01</td>
+			<td aligh="left">nginxhello-85f8846c44-pzpzs</td>
+			<td aligh="left">10.244.0.56</td>
+		</tr>
+		<tr>
+			<td aligh="left">kind02</td>
+			<td aligh="left">nginxhello-85f8846c44-v88f8</td>
+			<td aligh="left">10.244.0.190</td>
+		</tr>
+		<tr>
+			<td aligh="left">kind02</td>
+			<td aligh="left">nginxhello-85f8846c44-vtgtz</td>
+			<td aligh="left">10.244.1.247</td>
+		</tr>
+	</tbody>
+</table>
+
+Invoke a simple curl command to the service VIP, namely curl -s http://172.30.0.10, in a loop and keep track of which endpoint pod responds to the HTTP request.
+It is observed from the command output that the HTTP traffic is distributed between the nginx pods (10.244.0.171, 10.244.0.56) on kind01 and those (10.244.0.190, 10.244.0.247) on kind02 in a fairly even manner.
+```
+keyuser@ubunclone:~/BGP_Anycast_Cilium_SLB$ for i in {1..20}
+do
+docker exec client curl -s http://172.30.0.10
+sleep 3
+done
+Server address: 10.244.1.171:80
+Server name: nginxhello-85f8846c44-kb44r
+Date: 21/Dec/2025:03:21:32 +0000
+URI: /
+Request ID: d9084c441c6ba9bb0da5b085510513fa
+Server address: 10.244.0.56:80
+Server name: nginxhello-85f8846c44-pzpzs
+Date: 21/Dec/2025:03:21:35 +0000
+URI: /
+Request ID: a9308c0ba063904633db02e240be6cdc
+Server address: 10.244.0.190:80
+Server name: nginxhello-85f8846c44-v88f8
+Date: 21/Dec/2025:03:21:39 +0000
+URI: /
+Request ID: daef9ca7d98cae79dd762b5c2805f129
+Server address: 10.244.1.171:80
+Server name: nginxhello-85f8846c44-kb44r
+Date: 21/Dec/2025:03:21:43 +0000
+URI: /
+Request ID: 63da67ee67c344ef7a6f518f2e89c5cd
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:21:46 +0000
+URI: /
+Request ID: 9bbc5a0b27b70faedbc1cefef86fe8a5
+Server address: 10.244.0.190:80
+Server name: nginxhello-85f8846c44-v88f8
+Date: 21/Dec/2025:03:21:50 +0000
+URI: /
+Request ID: ef39a32f3439029ead44a65e1f89c910
+Server address: 10.244.0.56:80
+Server name: nginxhello-85f8846c44-pzpzs
+Date: 21/Dec/2025:03:21:54 +0000
+URI: /
+Request ID: ebce81d196d8ff7928cceba90cfc2695
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:21:57 +0000
+URI: /
+Request ID: 1df619bc2b59dffd722f6427c5856ff1
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:22:01 +0000
+URI: /
+Request ID: 86c0c4cb734fab92f7e6b33b9fc1b1b3
+Server address: 10.244.0.190:80
+Server name: nginxhello-85f8846c44-v88f8
+Date: 21/Dec/2025:03:22:04 +0000
+URI: /
+Request ID: 9426a571bdc919f2ee300a2d960b9f9d
+Server address: 10.244.1.171:80
+Server name: nginxhello-85f8846c44-kb44r
+Date: 21/Dec/2025:03:22:08 +0000
+URI: /
+Request ID: 4a02a251a6da83c35b0b973d7a146f9e
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:22:12 +0000
+URI: /
+Request ID: a5d2ee01c3e63c190d9ece943fab8c9b
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:22:15 +0000
+URI: /
+Request ID: 034719e79ca8d99812d0fc8cfe423ac3
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:22:19 +0000
+URI: /
+Request ID: d3c0ff1623c129173ccfc216c128af2c
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:22:22 +0000
+URI: /
+Request ID: 2768562909358b7fb2cafa13ba584846
+Server address: 10.244.0.56:80
+Server name: nginxhello-85f8846c44-pzpzs
+Date: 21/Dec/2025:03:22:26 +0000
+URI: /
+Request ID: be52f52629303217ea92a9633d9ccee3
+Server address: 10.244.1.171:80
+Server name: nginxhello-85f8846c44-kb44r
+Date: 21/Dec/2025:03:22:30 +0000
+URI: /
+Request ID: 34a649f112ba6467116d8b1fa26635e7
+Server address: 10.244.1.171:80
+Server name: nginxhello-85f8846c44-kb44r
+Date: 21/Dec/2025:03:22:34 +0000
+URI: /
+Request ID: ced52413e432d5a5dd9efc0da06496e6
+Server address: 10.244.0.190:80
+Server name: nginxhello-85f8846c44-v88f8
+Date: 21/Dec/2025:03:22:38 +0000
+URI: /
+Request ID: d39b782b497671fbbf71bc28bca4b050
+Server address: 10.244.1.247:80
+Server name: nginxhello-85f8846c44-vtgtz
+Date: 21/Dec/2025:03:22:42 +0000
+URI: /
+Request ID: 3be25b71dbafd92e261f42632e53e213
 ```
 
 
