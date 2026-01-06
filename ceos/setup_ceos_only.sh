@@ -1,12 +1,9 @@
 #!/bin/bash
 
+# ... network creation ...
 docker network create --subnet=192.168.20.0/24 client
 docker network create --subnet=10.20.0.0/16 kind01
 docker network create --subnet=172.20.0.0/16 kind02
-
-#!/bin/bash
-
-# ... network creation ...
 
 # Using 'EOF' prevents Bash from interpreting any characters inside the config
 cat > ceos1.cfg <<'EOF'
