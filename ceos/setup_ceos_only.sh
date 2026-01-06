@@ -91,5 +91,3 @@ docker run -itd --name=ceos-r1 --privileged \
 
 docker network connect --ip 10.20.0.101 kind01 ceos-r1
 docker network connect --ip 172.20.0.101 kind02 ceos-r1
-
-docker exec frrtor vtysh -c "show bgp summary && show ip bgp && show ip route"
