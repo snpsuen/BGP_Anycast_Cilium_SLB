@@ -53,6 +53,26 @@ router bgp 65001
       neighbor 10.20.0.2 advertise additional-paths route-map RM-ADD-PATH-SELECTION
       neighbor 10.20.0.2 route-map ACCEPT-ALL out
       ! (Repeat for other neighbors...)
+
+      neighbor 10.20.0.3 remote-as 65101
+      neighbor 10.20.0.3 additional-paths receive
+      neighbor 10.20.0.3 additional-paths send any
+      neighbor 10.20.0.3 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 10.20.0.3 route-map ACCEPT-ALL out
+      ! (Repeat for other neighbors...)
+
+      neighbor 170.20.0.2 remote-as 65102
+      neighbor 170.20.0.2 additional-paths receive
+      neighbor 170.20.0.2 additional-paths send any
+      neighbor 170.20.0.2 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 170.20.0.2 route-map ACCEPT-ALL out
+      ! (Repeat for other neighbors...)
+
+      neighbor 170.20.0.3 remote-as 65102
+      neighbor 170.20.0.3 additional-paths receive
+      neighbor 170.20.0.3 additional-paths send any
+      neighbor 170.20.0.3 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 170.20.0.3 route-map ACCEPT-ALL out
 EOF
 
 docker run -itd --name=ceos-r1 --privileged \
