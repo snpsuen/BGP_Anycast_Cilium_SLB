@@ -26,6 +26,7 @@ docker network connect --ip 172.20.0.101 kind02 ceos-r1
 # 4. Give the agents a moment to see the new interfaces
 echo "Waiting 20s for interfaces to initialize..."
 sleep 20
+docker exec ceos-r1 ip -4 addr
 
 # 5. Push configuration using an Eos Config Session to ensure context
 docker exec ceos-r1 Cli <<'EOF'
