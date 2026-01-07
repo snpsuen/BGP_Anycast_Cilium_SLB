@@ -24,11 +24,11 @@ docker network connect --ip 10.20.0.101 kind01 ceos-r1
 docker network connect --ip 172.20.0.101 kind02 ceos-r1
 
 # 4. Give the agents a moment to see the new interfaces
-echo "Waiting 15s for interfaces to initialize..."
-sleep 15
+echo "Waiting 20s for interfaces to initialize..."
+sleep 20
 
 # 5. Push configuration using an Eos Config Session to ensure context
-docker exec -it ceos-r1 Cli <<'EOF'
+docker exec ceos-r1 Cli <<'EOF'
 enable
 configure terminal
 !
