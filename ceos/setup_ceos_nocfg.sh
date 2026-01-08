@@ -52,3 +52,58 @@ interface Ethernet3
 exit
 write memory
 EOF
+
+docker restart ceos-r1
+sleep 10
+
+docker exec ceos-r1 Cli <<'EOF'
+enable
+configure terminal
+!
+ip prefix-list ANYCAST_ONLY
+   seq 10 permit 172.30.0.10/32
+!
+route-map RM-ADD-PATH-SELECTION permit 10
+   match ip address prefix-list ANYCAST_ONLY
+!
+route-map ACCEPT-ALL permit 10
+!
+router bgp 65001
+   router-id 10.0.255.11
+   bgp bestpath as-path multipath-relax
+   !
+   address-family ipv4
+      bgp additional-paths install
+      bgp additional-paths selection route-map RM-ADD-PATH-SELECTION
+      maximum-paths 10
+      network 192.168.20.0/24
+      network 10.20.0.0/16
+      network 172.20.0.0/16
+      !
+      neighbor 10.20.0.2 remote-as 65101
+      neighbor 10.20.0.2 additional-paths receive
+      neighbor 10.20.0.2 additional-paths send any
+      neighbor 10.20.0.2 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 10.20.0.2 route-map ACCEPT-ALL out
+      !
+      neighbor 10.20.0.3 remote-as 65101
+      neighbor 10.20.0.3 additional-paths receive
+      neighbor 10.20.0.3 additional-paths send any
+      neighbor 10.20.0.3 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 10.20.0.3 route-map ACCEPT-ALL out
+      !
+      neighbor 172.20.0.2 remote-as 65102
+      neighbor 172.20.0.2 additional-paths receive
+      neighbor 172.20.0.2 additional-paths send any
+      neighbor 172.20.0.2 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 172.20.0.2 route-map ACCEPT-ALL out
+      !
+      neighbor 172.20.0.3 remote-as 65102
+      neighbor 172.20.0.3 additional-paths receive
+      neighbor 172.20.0.3 additional-paths send any
+      neighbor 172.20.0.3 advertise additional-paths route-map RM-ADD-PATH-SELECTION
+      neighbor 172.20.0.3 route-map ACCEPT-ALL out
+   exit
+exit
+write memory
+EOF
