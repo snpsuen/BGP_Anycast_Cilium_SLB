@@ -49,18 +49,6 @@ interface Ethernet3
    no switchport
    ip address 172.20.0.101/16
 !
-exit
-write memory"
-
-docker restart ceos-r1
-echo "Waiting 20s for interfaces to initialize..."
-sleep 20
-docker exec ceos-r1 ip -4 addr
-
-docker exec ceos-r1 Cli -c "
-enable
-configure terminal
-!
 ip prefix-list ANYCAST_ONLY
    seq 10 permit 172.30.0.10/32
 !
@@ -68,6 +56,20 @@ route-map RM-ADD-PATH-SELECTION permit 10
    match ip address prefix-list ANYCAST_ONLY
 !
 route-map ACCEPT-ALL permit 10
+!
+exit
+write memory"
+
+docker restart ceos-r1
+echo "Waiting 20s for interfaces to initialize..."
+sleep 20
+docker exec ceos-r1 ip -4 addr
+docker exec ceos-r1 Cli -c "show interfaces"
+docker exec ceos-r1 Cli -c "show redundancy protocol"
+
+docker exec ceos-r1 Cli -c "
+enable
+configure terminal
 !
 router bgp 65001
    router-id 10.0.255.11
