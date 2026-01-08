@@ -29,7 +29,7 @@ sleep 20
 docker exec ceos-r1 ip -4 addr
 
 # 5. Push configuration using an Eos Config Session to ensure context
-docker exec ceos-r1 Cli <<'EOF'
+docker exec ceos-r1 Cli -c "
 enable
 configure terminal
 !
@@ -50,13 +50,14 @@ interface Ethernet3
    ip address 172.20.0.101/16
 !
 exit
-write memory
-EOF
+write memory"
 
 docker restart ceos-r1
-sleep 10
+echo "Waiting 20s for interfaces to initialize..."
+sleep 20
+docker exec ceos-r1 ip -4 addr
 
-docker exec ceos-r1 Cli <<'EOF'
+docker exec ceos-r1 Cli -c "
 enable
 configure terminal
 !
@@ -105,5 +106,4 @@ router bgp 65001
       neighbor 172.20.0.3 route-map ACCEPT-ALL out
    exit
 exit
-write memory
-EOF
+write memory"
