@@ -7,7 +7,6 @@ docker network create --subnet=172.20.0.0/16 kind02
 
 # 2. Start Container (Connects eth0/Ethernet1 automatically via --network)
 docker run -itd --name=ceos-r1 --privileged \
-  --network client --ip 192.168.20.101 \
   -e INTFTYPE=eth -e ETBA=4 -e SKIP_ZEROTOUCH_BARRIER_IN_SYSDBINIT=1 \
   -e CEOS=1 -e EOS_PLATFORM=ceoslab -e container=docker \
   snpsuen/ceos:4.33 \
@@ -20,6 +19,7 @@ docker run -itd --name=ceos-r1 --privileged \
   systemd.setenv=container=docker
 
 # 3. Connect remaining networks BEFORE configuring
+docker network connect --ip 192.168.20.101 kind01 ceos-r1
 docker network connect --ip 10.20.0.101 kind01 ceos-r1
 docker network connect --ip 172.20.0.101 kind02 ceos-r1
 
