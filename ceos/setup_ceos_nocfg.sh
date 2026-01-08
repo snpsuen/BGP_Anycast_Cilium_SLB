@@ -29,7 +29,7 @@ sleep 20
 docker exec ceos-r1 ip -4 addr
 
 # 5. Push configuration using an Eos Config Session to ensure context
-docker exec -it ceos-r1 Cli <<'EOF'
+docker exec ceos-r1 Cli <<'EOF'
 enable
 configure terminal
 !
