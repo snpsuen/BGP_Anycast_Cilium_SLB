@@ -49,4 +49,6 @@ interface Ethernet3
    no switchport
    ip address 172.20.0.101/16
 !
+exit
+write memory
 EOF
