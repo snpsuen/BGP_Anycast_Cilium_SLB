@@ -6,7 +6,7 @@ docker network create --subnet=10.20.0.0/16 kind01
 docker network create --subnet=172.20.0.0/16 kind02
 
 # 2. Prepare the config file
-cat > ceos1.cfg <<EOF
+cat > ceos1.cfg <<'EOF'
 !
 service routing protocols model multi-agent
 !
@@ -24,8 +24,6 @@ interface Ethernet2
 interface Ethernet3
    no switchport
    ip address 172.20.0.101/16
-!
-ip routing
 !
 ip prefix-list ANYCAST_ONLY
    seq 10 permit 172.30.0.10/32
