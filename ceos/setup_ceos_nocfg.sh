@@ -61,8 +61,8 @@ exit
 write memory"
 
 docker restart ceos-r1
-echo "Waiting 20s for interfaces to initialize..."
-sleep 20
+echo "Waiting 30s for interfaces to initialize..."
+sleep 30
 docker exec ceos-r1 ip -4 addr
 docker exec ceos-r1 Cli -c "show interfaces"
 docker exec ceos-r1 Cli -c "show redundancy protocol"
@@ -70,15 +70,22 @@ docker exec ceos-r1 Cli -c "show redundancy protocol"
 docker exec ceos-r1 Cli -c "
 enable
 configure terminal
-!
+! --- GLOBAL BGP STANZA ---
 router bgp 65001
    router-id 10.0.255.11
    bgp bestpath as-path multipath-relax
+   maximum-paths 10
    !
+   ! --- IPV4 ADDRESS-FAMILY SUB-STANZA (PART 1) ---
    address-family ipv4
       bgp additional-paths install
+   exit 
+   ! Closing above 'commits' the feature unlock
+   !
+   ! --- IPV4 ADDRESS-FAMILY SUB-STANZA (PART 2) ---
+   address-family ipv4
       bgp additional-paths selection route-map RM-ADD-PATH-SELECTION
-      maximum-paths 10
+      !
       network 192.168.20.0/24
       network 10.20.0.0/16
       network 172.20.0.0/16
