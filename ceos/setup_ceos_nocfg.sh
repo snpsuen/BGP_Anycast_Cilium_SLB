@@ -24,11 +24,20 @@ docker network connect --ip 10.20.0.101 kind01 ceos-r1
 docker network connect --ip 172.20.0.101 kind02 ceos-r1
 
 # 4. Give the agents a moment to see the new interfaces
-echo "Waiting 20s for interfaces to initialize..."
-sleep 40
+echo "Waiting 10s for interfaces to initialize..."
+sleep 10
 docker exec ceos-r1 ip -4 addr
-docker exec ceos-r1 Cli -c "show version"
-read -p "Press enter to continue ..."
+
+while true
+do
+  docker exec ceos-r1 Cli -c "show version"
+  status=$?
+  if [ $status -eq 0 ]
+  then
+    break
+  fi
+  sleep 5
+done
 
 # 5. Push configuration using an Eos Config Session to ensure context
 docker exec ceos-r1 Cli -c "
@@ -63,11 +72,21 @@ exit
 write memory"
 
 docker restart ceos-r1
-echo "Waiting 30s for interfaces to initialize..."
-sleep 40
+
+echo "Waiting 10s for interfaces to initialize..."
+sleep 10
 docker exec ceos-r1 ip -4 addr
-docker exec ceos-r1 Cli -c "show version"
-read -p "Press enter to continue ..."
+
+while true
+do
+  docker exec ceos-r1 Cli -c "show version"
+  status=$?
+  if [ $status -eq 0 ]
+  then
+    break
+  fi
+  sleep 5
+done
 
 docker exec ceos-r1 Cli -c "
 enable
