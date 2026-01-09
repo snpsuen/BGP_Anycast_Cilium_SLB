@@ -27,7 +27,7 @@ docker network connect --ip 172.20.0.101 kind02 ceos-r1
 echo "Waiting 20s for interfaces to initialize..."
 sleep 40
 docker exec ceos-r1 ip -4 addr
-docker exec ceos-r1 Cli -c "show interfaces"
+docker exec ceos-r1 Cli -c "show version"
 read -p "Press enter to continue ..."
 
 # 5. Push configuration using an Eos Config Session to ensure context
@@ -66,8 +66,7 @@ docker restart ceos-r1
 echo "Waiting 30s for interfaces to initialize..."
 sleep 40
 docker exec ceos-r1 ip -4 addr
-docker exec ceos-r1 Cli -c "show interfaces"
-docker exec ceos-r1 Cli -c "show redundancy protocol"
+docker exec ceos-r1 Cli -c "show version"
 read -p "Press enter to continue ..."
 
 docker exec ceos-r1 Cli -c "
