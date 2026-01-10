@@ -63,14 +63,27 @@ interface Ethernet3
 ! --- PREFIX LIST ---
 ip prefix-list ANYCAST_ONLY seq 10 permit 172.30.0.10/32
 !
-! --- UNIFIED CILIUM GATEKEEPER ---
-route-map RM-CILIUM permit 10
-  match ip address prefix-list ANYCAST_ONLY
-  set additional-paths all
+! --- INBOUND: THE GATEKEEPER ---
+! This tells the router: "For the Anycast IP, you are ALLOWED to keep 
+! all versions of this route in your internal memory (Loc-RIB)."
+route-map RM-CILIUM-IN permit 10
+   match ip address prefix-list ANYCAST_ONLY
+   set additional-paths all
 !
-route-map RM-CILIUM permit 20
-  description ADMIT-LEGACY-ROUTES-ONLY
+route-map RM-CILIUM-IN permit 20
+   description ADMIT-LEGACY-ROUTES-ONLY
+   ! No 'set' clause here means standard best-path selection applies.
+
+! --- OUTBOUND: THE FILTER ---
+! This tells the router: "When talking to Cilium, only send what is 
+! allowed. Because the neighbor has 'send any' enabled, it will automatically 
+! look for those extra paths we stored in the Loc-RIB."
+route-map RM-CILIUM-OUT permit 10
+   match ip address prefix-list ANYCAST_ONLY
 !
+route-map RM-CILIUM-OUT permit 20
+   description ADMIT-LEGACY-ROUTES-ONLY
+   
 ! --- BGP CONFIGURATION ---
 router bgp 65001
   router-id 10.0.255.11
@@ -90,48 +103,36 @@ router bgp 65001
     neighbor 10.20.0.2 additional-paths receive
     neighbor 10.20.0.2 additional-paths send any
       
-    ! Enable the neighbor to carry Path IDs
-    neighbor 10.20.0.2 advertise additional-paths
-      
     ! The 'Gatekeepers'
-    neighbor 10.20.0.2 route-map RM-CILIUM in
-    neighbor 10.20.0.2 route-map RM-CILIUM out
+    neighbor 10.20.0.2 route-map RM-CILIUM-IN in
+    neighbor 10.20.0.2 route-map RM-CILIUM-OUT out
 
     ! Applying unified policy to neighbor 10.20.0.3
     neighbor 10.20.0.3 remote-as 65101
     neighbor 10.20.0.3 additional-paths receive
     neighbor 10.20.0.3 additional-paths send any
       
-    ! Enable the neighbor to carry Path IDs
-    neighbor 10.20.0.3 advertise additional-paths
-      
     ! The 'Gatekeepers'
-    neighbor 10.20.0.3 route-map RM-CILIUM in
-    neighbor 10.20.0.3 route-map RM-CILIUM out
+    neighbor 10.20.0.3 route-map RM-CILIUM-IN in
+    neighbor 10.20.0.3 route-map RM-CILIUM-OUT out
 
     ! Applying unified policy to neighbor 172.20.0.2
     neighbor 172.20.0.2 remote-as 65102
     neighbor 172.20.0.2 additional-paths receive
     neighbor 172.20.0.2 additional-paths send any
       
-    ! Enable the neighbor to carry Path IDs
-    neighbor 172.20.0.2 advertise additional-paths
-      
     ! The 'Gatekeepers'
-    neighbor 172.20.0.2 route-map RM-CILIUM in
-    neighbor 172.20.0.2 route-map RM-CILIUM out
+    neighbor 172.20.0.2 route-map RM-CILIUM-IN in
+    neighbor 172.20.0.2 route-map RM-CILIUM-OUT out
 
     ! Applying unified policy to neighbor 172.20.0.3
     neighbor 172.20.0.3 remote-as 65102
     neighbor 172.20.0.3 additional-paths receive
     neighbor 172.20.0.3 additional-paths send any
       
-    ! Enable the neighbor to carry Path IDs
-    neighbor 172.20.0.3 advertise additional-paths
-      
     ! The 'Gatekeepers'
-    neighbor 172.20.0.3 route-map RM-CILIUM in
-    neighbor 172.20.0.3 route-map RM-CILIUM out
+    neighbor 172.20.0.3 route-map RM-CILIUM-IN in
+    neighbor 172.20.0.3 route-map RM-CILIUM-OUT out
     
 exit
 write memory"
