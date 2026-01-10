@@ -68,7 +68,6 @@ ip prefix-list ANYCAST_ONLY seq 10 permit 172.30.0.10/32
 ! all versions of this route in your internal memory (Loc-RIB)."
 route-map RM-CILIUM-IN permit 10
    match ip address prefix-list ANYCAST_ONLY
-   set additional-paths all
 !
 route-map RM-CILIUM-IN permit 20
    description ADMIT-LEGACY-ROUTES-ONLY
