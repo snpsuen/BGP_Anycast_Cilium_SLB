@@ -133,6 +133,5 @@ write memory"
 
 docker exec ceos-r1 Cli -c "
 enable
-show running-config
-exit"
+show running-config"
 
