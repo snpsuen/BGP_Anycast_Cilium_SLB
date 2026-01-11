@@ -130,3 +130,9 @@ router bgp 65001
     neighbor 172.20.0.3 route-map RM-CILIUM out
 exit
 write memory"
+
+docker exec ceos-r1 Cli -c "
+enable
+show running-config
+exit"
+
