@@ -94,6 +94,9 @@ route-map RM-CILIUM permit 10
 route-map RM-CILIUM permit 20
    description ADMIT-LEGACY-ROUTES-ONLY
 !
+route-map RM-LEGACY permit 10
+   description ADMIT-LEGACY-ROUTES-ONLY
+!
 router bgp 65001
   router-id 10.0.255.11
   bgp bestpath as-path multipath-relax
@@ -114,8 +117,8 @@ router bgp 65001
     neighbor 10.20.0.2 additional-paths send
     neighbor 10.20.0.2 bgp additional-paths select prefix-list ANYCAST_ONLY
   
-    neighbor 10.20.0.2 route-map RM-CILIUM in
-    neighbor 10.20.0.2 route-map RM-CILIUM out
+    neighbor 10.20.0.2 route-map RM-LEGACY in
+    neighbor 10.20.0.2 route-map RM-LEGACY out
 
     neighbor 10.20.0.3 remote-as 65101
     neighbor 10.20.0.3 additional-paths receive
@@ -124,8 +127,8 @@ router bgp 65001
     neighbor 10.20.0.3 additional-paths send
     neighbor 10.20.0.3 bgp additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 10.20.0.3 route-map RM-CILIUM in
-    neighbor 10.20.0.3 route-map RM-CILIUM out
+    neighbor 10.20.0.3 route-map RM-LEGACY in
+    neighbor 10.20.0.3 route-map RM-LEGACY out
 
     neighbor 172.20.0.2 remote-as 65102
     neighbor 172.20.0.2 additional-paths receive
@@ -134,8 +137,8 @@ router bgp 65001
     neighbor 172.20.0.2 additional-paths send
     neighbor 172.20.0.2 bgp additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 172.20.0.2 route-map RM-CILIUM in
-    neighbor 172.20.0.2 route-map RM-CILIUM out
+    neighbor 172.20.0.2 route-map RM-LEGACY in
+    neighbor 172.20.0.2 route-map RM-LEGACY out
 
     neighbor 172.20.0.3 remote-as 65102
     neighbor 172.20.0.3 additional-paths receive
@@ -144,8 +147,8 @@ router bgp 65001
     neighbor 172.20.0.3 additional-paths send
     neighbor 172.20.0.3 bgp additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 172.20.0.3 route-map RM-CILIUM in
-    neighbor 172.20.0.3 route-map RM-CILIUM out
+    neighbor 172.20.0.3 route-map RM-LEGACY in
+    neighbor 172.20.0.3 route-map RM-LEGACY out
 exit
 write memory"
 
