@@ -50,7 +50,6 @@ exit
 write memory"
 
 docker restart ceos-r1
-# 4. Give the agents a moment to see the new interfaces
 echo "Waiting 10s for interfaces to initialize..."
 sleep 10
 docker exec ceos-r1 ip -4 addr
@@ -106,7 +105,6 @@ router bgp 65001
     network 10.20.0.0/16
     network 172.20.0.0/16
     
-    # Apply to all 4 neighbors using the UNIFIED map
     neighbor 10.20.0.2 remote-as 65101
     neighbor 10.20.0.2 additional-paths receive
     neighbor 10.20.0.2 additional-paths send any
