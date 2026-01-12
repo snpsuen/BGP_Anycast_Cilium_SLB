@@ -2,8 +2,8 @@
 
 docker network create --subnet=192.168.20.0/24 client
 
-mkdir -p configure
-cat > configure/frrtor.conf <<EOF
+mkdir -p conf
+cat > conf/frrtor_addpath.conf <<EOF
 interface eth0
  ip address 192.168.20.101/24
 interface eth1
@@ -24,13 +24,20 @@ router bgp 65001
   network 192.168.20.0/24
   network 10.20.0.0/16
   network 172.20.0.0/16
-  
+
+  neighbor 10.20.0.2 addpath-tx-all-paths
   neighbor 10.20.0.2 route-map ACCEPT-ALL in
   neighbor 10.20.0.2 route-map ACCEPT-ALL out
+
+  neighbor 10.20.0.3 addpath-tx-all-paths
   neighbor 10.20.0.3 route-map ACCEPT-ALL in
   neighbor 10.20.0.3 route-map ACCEPT-ALL out
+
+  neighbor 172.20.0.2 addpath-tx-all-paths
   neighbor 172.20.0.2 route-map ACCEPT-ALL in
   neighbor 172.20.0.2 route-map ACCEPT-ALL out
+
+  neighbor 172.20.0.3 addpath-tx-all-paths
   neighbor 172.20.0.3 route-map ACCEPT-ALL in
   neighbor 172.20.0.3 route-map ACCEPT-ALL out
  exit-address-family
@@ -38,7 +45,7 @@ router bgp 65001
 route-map ACCEPT-ALL permit 10
 EOF
 
-cat > configure/frrdaemons <<EOF
+cat > conf/frrdaemons <<EOF
 zebra=yes
 bgpd=yes
 staticd=yes
@@ -59,14 +66,14 @@ fabricd=no
 vrrpd=no
 EOF
 
-cat > configure/vtysh.conf <<EOF
+cat > conf/vtysh.conf <<EOF
 service integrated-vtysh-config
 EOF
 
 docker run -d --init --privileged --name frrtor \
--v ./configure/frrtor_addpath.conf:/etc/frr/frr.conf \
--v ./configure/frrdaemons:/etc/frr/daemons \
--v ./configure/vtysh.conf:/etc/frr/vtysh.conf \
+-v ./conf/frrtor_addpath.conf:/etc/frr/frr.conf \
+-v ./conf/frrdaemons:/etc/frr/daemons \
+-v ./conf/vtysh.conf:/etc/frr/vtysh.conf \
 --network client --ip 192.168.20.101 \
 frrouting/frr:latest
 
