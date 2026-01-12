@@ -112,40 +112,40 @@ router bgp 65001
     
     neighbor 10.20.0.2 remote-as 65101
     neighbor 10.20.0.2 additional-paths receive
-    neighbor 10.20.0.2 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 10.20.0.2 additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 10.20.0.2 additional-paths send
-    neighbor 10.20.0.2 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 10.20.0.2 additional-paths send any
+    neighbor 10.20.0.2 additional-paths select prefix-list ANYCAST_ONLY
   
     neighbor 10.20.0.2 route-map RM-LEGACY in
     neighbor 10.20.0.2 route-map RM-LEGACY out
 
     neighbor 10.20.0.3 remote-as 65101
     neighbor 10.20.0.3 additional-paths receive
-    neighbor 10.20.0.3 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 10.20.0.3 additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 10.20.0.3 additional-paths send
-    neighbor 10.20.0.3 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 10.20.0.3 additional-paths send any
+    neighbor 10.20.0.3 additional-paths select prefix-list ANYCAST_ONLY
     
     neighbor 10.20.0.3 route-map RM-LEGACY in
     neighbor 10.20.0.3 route-map RM-LEGACY out
 
     neighbor 172.20.0.2 remote-as 65102
     neighbor 172.20.0.2 additional-paths receive
-    neighbor 172.20.0.2 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 172.20.0.2 additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 172.20.0.2 additional-paths send
-    neighbor 172.20.0.2 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 172.20.0.2 additional-paths send any
+    neighbor 172.20.0.2 additional-paths select prefix-list ANYCAST_ONLY
     
     neighbor 172.20.0.2 route-map RM-LEGACY in
     neighbor 172.20.0.2 route-map RM-LEGACY out
 
     neighbor 172.20.0.3 remote-as 65102
     neighbor 172.20.0.3 additional-paths receive
-    neighbor 172.20.0.3 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 172.20.0.3 additional-paths select prefix-list ANYCAST_ONLY
     
-    neighbor 172.20.0.3 additional-paths send
-    neighbor 172.20.0.3 bgp additional-paths select prefix-list ANYCAST_ONLY
+    neighbor 172.20.0.3 additional-paths send any
+    neighbor 172.20.0.3 additional-paths select prefix-list ANYCAST_ONLY
     
     neighbor 172.20.0.3 route-map RM-LEGACY in
     neighbor 172.20.0.3 route-map RM-LEGACY out
